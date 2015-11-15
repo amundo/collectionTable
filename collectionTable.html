@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+<style>
+header { 
+  display:flex;
+  padding: 1em 0;
+}
+input#url { 
+  flex: 1; 
+}
+</style>
+</head>
+<body>
+  
+<header>
+<button id=edit>edit</button>
+<button id=done>done</button>
+<input id=url placeholder="load URL to JSON file on this domain">
+<input type=file id=upload value="upload" placeholder="click to load a local JSON file from your computer">
+</header>
+<section id=collectionTable>
+</section>
+
+<script src=collectionTable.js></script>
+<script>
+
+
+var load = url => {
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      window.c = new CollectionTable({
+        collection : data, //[{a:1,b:2},{a:10,b:20}],
+        container : document.querySelector('section#collectionTable')
+      });
+    })
+  
+  c.render();
+}
+
+var input = document.querySelector('#url');
+input.addEventListener('keyup', ev => {
+  if(ev.which == 13){ 
+    load(input.value)
+  }
+})
+
+var uploader = document.querySelector('input#upload');
+uploader.addEventListener('change', ev  => {
+  var file = ev.target.files[0]; 
+
+  var fileReader = new FileReader();
+  fileReader.readAsText(file, "utf-8");
+
+  fileReader.addEventListener('load', ev => {
+    var data = JSON.parse(ev.target.result);
+    window.c = new CollectionTable({
+      collection : data, 
+      container : document.querySelector('section#collectionTable')
+    });
+  });
+  
+})
+</script>
+</body>
+
+</html>
